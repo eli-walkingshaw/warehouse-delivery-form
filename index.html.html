@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warehouse Delivery Entry Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .setup-notice {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 30px;
+            border-radius: 5px;
+        }
+
+        .setup-notice h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .setup-notice p {
+            color: #856404;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .setup-notice code {
+            background: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            color: #e83e8c;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .legend-item.transfer {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .legend-item.private {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .legend-item.carrier {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .legend-item.unexpected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .form-section {
+            padding: 30px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        label .required {
+            color: #e74c3c;
+        }
+
+        input, select, textarea {
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .delivery-type-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .delivery-card {
+            border: 3px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .delivery-card input[type="radio"] {
+            display: none;
+        }
+
+        .delivery-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .delivery-card.selected {
+            border-width: 3px;
+        }
+
+        .delivery-card.transfer {
+            background: #d4edda;
+        }
+
+        .delivery-card.transfer.selected {
+            border-color: #28a745;
+        }
+
+        .delivery-card.private {
+            background: #fff3cd;
+        }
+
+        .delivery-card.private.selected {
+            border-color: #ffc107;
+        }
+
+        .delivery-card.carrier {
+            background: #cce5ff;
+        }
+
+        .delivery-card.carrier.selected {
+            border-color: #007bff;
+        }
+
+        .delivery-card.unexpected {
+            background: #f8d7da;
+        }
+
+        .delivery-card.unexpected.selected {
+            border-color: #dc3545;
+        }
+
+        .delivery-card h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .delivery-card p {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-reset {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .btn-reset:hover {
+            background: #dee2e6;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideIn 0.3s;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .delivery-type-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+
+        .connection-status {
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .connection-status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .connection-status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚚 Warehouse Delivery Entry</h1>
+            <p>Track and manage all warehouse deliveries</p>
+        </div>
+
+        <div id="connectionStatus" class="connection-status disconnected">
+            ⚠️ Google Sheets not connected - See setup instructions below
+        </div>
+
+        <div class="setup-notice">
+            <h3>⚙️ Setup Required</h3>
+            <p><strong>Step 1:</strong> Replace <code>YOUR_GOOGLE_APPS_SCRIPT_URL</code> in the code with your actual Google Apps Script web app URL</p>
+            <p><strong>Step 2:</strong> Follow the setup instructions in the accompanying document</p>
+            <p><strong>Step 3:</strong> Once connected, the warning above will disappear</p>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item transfer">
+                <span>●</span> Transfer Truck (Tue/Thu)
+            </div>
+            <div class="legend-item private">
+                <span>●</span> Private/Vendor (Mon/Wed/Fri)
+            </div>
+            <div class="legend-item carrier">
+                <span>●</span> UPS/FedEx (Daily)
+            </div>
+            <div class="legend-item unexpected">
+                <span>●</span> Unexpected (Any day)
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="success-message" id="successMessage">
+                ✓ Delivery saved to Google Sheets successfully!
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                ✗ Error saving to Google Sheets. Please check your connection.
+            </div>
+
+            <div class="loading" id="loadingIndicator">
+                Saving to Google Sheets...
+            </div>
+
+            <form id="deliveryForm">
+                <div class="form-group">
+                    <label>Delivery Type <span class="required">*</span></label>
+                    <div class="delivery-type-cards">
+                        <label class="delivery-card transfer">
+                            <input type="radio" name="deliveryType" value="Transfer Truck" required>
+                            <h3>Transfer Truck</h3>
+                            <p>Internal transfers</p>
+                        </label>
+                        <label class="delivery-card private">
+                            <input type="radio" name="deliveryType" value="Private/Vendor">
+                            <h3>Private/Vendor</h3>
+                            <p>Vendor deliveries</p>
+                        </label>
+                        <label class="delivery-card carrier">
+                            <input type="radio" name="deliveryType" value="UPS/FedEx">
+                            <h3>UPS/FedEx</h3>
+                            <p>Standard carriers</p>
+                        </label>
+                        <label class="delivery-card unexpected">
+                            <input type="radio" name="deliveryType" value="Unexpected">
+                            <h3>Unexpected</h3>
+                            <p>Unscheduled</p>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="deliveryDate">Delivery Date <span class="required">*</span></label>
+                        <input type="date" id="deliveryDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="timeArrived">Time Arrived <span class="required">*</span></label>
+                        <input type="text" id="timeArrived" placeholder="9:30 AM" pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="carrier">Carrier/Vendor <span class="required">*</span></label>
+                        <input type="text" id="carrier" list="vendorList" placeholder="Start typing or select..." required>
+                        <datalist id="vendorList">
+                            <option value="UPS">
+                            <option value="FedEx">
+                            <option value="Accuride International, Inc">
+                            <option value="Airgas, Inc.">
+                            <option value="Alliance Cable & Wire Harness">
+                            <option value="Amazon">
+                            <option value="Grainger">
+                            <option value="McMaster-Carr">
+                            <option value="ULINE">
+                            <option value="Fastenal Company">
+                            <option value="Sol-Ark">
+                        </datalist>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location of Arrival <span class="required">*</span></label>
+                        <select id="location" required>
+                            <option value="">Select location...</option>
+                            <option value="Giga One - Dock A">Giga One - Dock A</option>
+                            <option value="Giga One - Dock B">Giga One - Dock B</option>
+                            <option value="Giga One - Dock C">Giga One - Dock C</option>
+                            <option value="Giga One - Receiving">Giga One - Receiving</option>
+                            <option value="SSL - Dock A">SSL - Dock A</option>
+                            <option value="SSL - Dock B">SSL - Dock B</option>
+                            <option value="SSL - Dock C">SSL - Dock C</option>
+                            <option value="SSL - Side Entrance">SSL - Side Entrance</option>
+                            <option value="Bay 1">Bay 1</option>
+                            <option value="Bay 2">Bay 2</option>
+                            <option value="Bay 3">Bay 3</option>
+                            <option value="Bay 4">Bay 4</option>
+                            <option value="Bay 5">Bay 5</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row full">
+                    <div class="form-group">
+                        <label for="contents">Contents <span class="required">*</span></label>
+                        <textarea id="contents" placeholder="Describe what was delivered (e.g., Solar Inverters R8KLVA - 10 pallets)" required></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="poReference">PO/Reference #</label>
+                        <input type="text" id="poReference" placeholder="PO-2026-0234">
+                    </div>
+                    <div class="form-group">
+                        <label for="receivedBy">Received By <span class="required">*</span></label>
+                        <input type="text" id="receivedBy" placeholder="Your name or initials" required>
+                    </div>
+                </div>
+
+                <div class="form-row full">
+                    <div class="form-group">
+                        <label for="notes">Notes</label>
+                        <textarea id="notes" placeholder="Any special notes, issues, or observations..."></textarea>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn-submit" id="submitBtn">Save to Google Sheets</button>
+                    <button type="button" class="btn-reset" onclick="resetForm()">Clear Form</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // IMPORTANT: Replace this URL with your Google Apps Script web app URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby6cV2eq9xsDvvNND9lo2OWKVJwkGNDV7Y4nkmkO56GQomyKxAZ5EEaOWVtBlkCIOdJNw/exec';
+
+        // Delivery type card selection
+        document.querySelectorAll('.delivery-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.delivery-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                this.querySelector('input[type="radio"]').checked = true;
+            });
+        });
+
+        // Set today's date by default
+        document.getElementById('deliveryDate').valueAsDate = new Date();
+
+        // Check if Google Script URL is configured
+        if (GOOGLE_SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+            document.getElementById('connectionStatus').className = 'connection-status connected';
+            document.getElementById('connectionStatus').innerHTML = '✓ Connected to Google Sheets';
+            document.querySelector('.setup-notice').style.display = 'none';
+        }
+
+        // Form submission
+        document.getElementById('deliveryForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+                alert('Please configure your Google Apps Script URL first!');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            
+            submitBtn.disabled = true;
+            loadingIndicator.style.display = 'block';
+
+            const delivery = {
+                date: document.getElementById('deliveryDate').value,
+                time: document.getElementById('timeArrived').value,
+                type: document.querySelector('input[name="deliveryType"]:checked').value,
+                carrier: document.getElementById('carrier').value,
+                location: document.getElementById('location').value,
+                contents: document.getElementById('contents').value,
+                poReference: document.getElementById('poReference').value,
+                receivedBy: document.getElementById('receivedBy').value,
+                notes: document.getElementById('notes').value,
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(delivery)
+                });
+
+                // Since we're using no-cors, we can't check the response
+                // Assume success if no error was thrown
+                showSuccessMessage();
+                resetForm();
+            } catch (error) {
+                console.error('Error:', error);
+                showErrorMessage();
+            } finally {
+                submitBtn.disabled = false;
+                loadingIndicator.style.display = 'none';
+            }
+        });
+
+        function showSuccessMessage() {
+            const msg = document.getElementById('successMessage');
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 5000);
+        }
+
+        function showErrorMessage() {
+            const msg = document.getElementById('errorMessage');
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 5000);
+        }
+
+        function resetForm() {
+            document.getElementById('deliveryForm').reset();
+            document.querySelectorAll('.delivery-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('deliveryDate').valueAsDate = new Date();
+        }
+    </script>
+</body>
+</html>
